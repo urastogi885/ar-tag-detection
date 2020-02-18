@@ -1,6 +1,3 @@
-# Set super user permission required
-sudo: required
-
 # Set OS to linux
 os: linux
 
