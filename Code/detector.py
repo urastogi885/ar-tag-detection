@@ -1,15 +1,14 @@
 import cv2 as cv
 
 
-def draw_contours(main_img):
+def draw_contours(img_frame):
     """  find and draw contours on the main frame
-    :param main_img: a frame from the video
+    :param img_frame: a frame from the video
     :return: image with contours and the contours matrix
     """
-    frame_grey = cv.cvtColor(main_img, cv.COLOR_BGR2GRAY)
-    ret_val, frame_thresh = cv.threshold(frame_grey, 200, 255, 0)
-    contours, hierarchy = cv.findContours(frame_thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    return contours, hierarchy
+    _, frame_thresh = cv.threshold(cv.cvtColor(img_frame, cv.COLOR_BGR2GRAY), 200, 255, 0)
+    contours, _ = cv.findContours(frame_thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    return contours
 
 
 def get_h_matrix(orientation, x, y):
