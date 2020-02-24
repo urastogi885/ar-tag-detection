@@ -8,11 +8,8 @@ import draw_3d
 
 if __name__ == '__main__':
     # Create cv object of video-capture
-    tag = cv.VideoCapture('videos/multipleTags.mp4')
-    # tag = cv.imread('images/video_frame.png')
-    # ar_tag = None
-    # ar_tag = cv.cornerHarris(cv.cvtColor(tag, cv.))
-    print_once = True
+    tag = cv.VideoCapture('videos/Tag2.mp4')
+    x_ref, y_ref = 400, 400
     while True:
         # Read the video frame by frame
         video_frame_exists, video_frame = tag.read()
@@ -22,10 +19,8 @@ if __name__ == '__main__':
         vf_original = copy(video_frame)
         # Store all size parameters of the frame
         rows, cols, channels = video_frame.shape
-        # Get contours from video frame
-        vf_grayscale = cv.cvtColor(video_frame, cv.COLOR_BGR2GRAY)
-        _, vf_threshold = cv.threshold(cv.cvtColor(video_frame, cv.COLOR_BGR2GRAY), 200, 255, 0)
-        contours, _ = cv.findContours(vf_threshold, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        # Get contours from the video frame
+        contours = detector.find_contours(video_frame)
         # Define array to store max contour area
         max_contour_area = np.zeros((1, 1, 2), dtype=int)
         for contour in contours:
