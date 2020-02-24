@@ -3,7 +3,8 @@
 *$py.class
 
 # Custom files
-videos/
+Code/videos/
+
 # C extensions
 *.so
 
