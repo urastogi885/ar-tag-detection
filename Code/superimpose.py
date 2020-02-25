@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 
 def get_h_matrices(poly_curve, x, y, orientation=0):
@@ -78,3 +79,28 @@ def superimpose_image(warped_img, video_frame, gray_img, gray_img_coords):
             video_frame[warped_img_coords[i][0]][warped_img_coords[i][1]] = \
                 gray_img[gray_img_coords[i][0]][gray_img_coords[i][1]]
     return gray_img
+
+
+def get_warp_perspective(transpose_image, h_matrix, dimension):
+    # TODO: Get transposed image from main
+    # image = cv.transpose(image)
+    warped_image = np.zeros((dimension[0], dimension[1], 3))
+    for index1 in range(0, transpose_image.shape[0]):
+        for index2 in range(0, transpose_image.shape[1]):
+            new_vec = np.dot(h_matrix, [index1, index2, 1])
+            new_row, new_col, _ = (new_vec / new_vec[2] + 0.4).astype(int)
+            if 5 < new_row < (dimension[0] - 5):
+                if 5 < new_col < (dimension[1] - 5):
+                    warped_image[new_row, new_col] = transpose_image[index1, index2]
+                    warped_image[new_row - 1, new_col - 1] = transpose_image[index1, index2]
+                    warped_image[new_row - 2, new_col - 2] = transpose_image[index1, index2]
+                    warped_image[new_row - 3, new_col - 3] = transpose_image[index1, index2]
+                    warped_image[new_row + 1, new_col + 1] = transpose_image[index1, index2]
+                    warped_image[new_row + 2, new_col + 2] = transpose_image[index1, index2]
+                    warped_image[new_row + 3, new_col + 3] = transpose_image[index1, index2]
+
+    # convert matrix to image
+    # warped_image = np.array(warped_image, dtype=np.uint8)
+    # warped_image = cv2.transpose(warped_image)
+    # TODO: Take transpose of image in main
+    return np.array(warped_image, dtype=np.uint8)
