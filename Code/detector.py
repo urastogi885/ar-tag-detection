@@ -64,7 +64,7 @@ def get_tag_id(img_frame, orientation):
             for j in range(structure[key][2], structure[key][3]):
                 total += img_frame[i][j]
 
-        if (total / 2500) > 180:
+        if (total / 2500) > 220:
             tag_id += '1'
         else:
             tag_id += '0'
