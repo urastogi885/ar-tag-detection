@@ -1,21 +1,28 @@
+# Import standard libraries
 import numpy as np
 import cv2 as cv
-import random
 from copy import copy
+# Import custom function scripts
 import detector
 import superimpose as si
 import draw_3d
 
 if __name__ == '__main__':
-    # Create cv object of video-capture
-    tag = cv.VideoCapture('videos/Tag2.mp4')
+    # Define constants for entire project
+    ref_dimension = 400
+    ref_world_frame = np.array([[0, 0], [ref_dimension - 1, 0], [ref_dimension - 1, ref_dimension - 1],
+                                [0, ref_dimension - 1]], dtype="float32")
+    three_d_axis = np.float32([[0, 0, 0], [0, 500, 0], [500, 500, 0], [500, 0, 0], [0, 0, -300], [0, 500, -300],
+                               [500, 500, -300], [500, 0, -300]])
+    # Create cv objects for video and Lena image
+    tag = cv.VideoCapture('videos/Tag0.mp4')
     lena = cv.imread('images/Lena.png')
     lena_x, lena_y, lena_channels = lena.shape
     lena_gray = cv.cvtColor(lena, cv.COLOR_BGR2GRAY)
-    x_ref, y_ref = 400, 400
-    three_d_axis = np.float32(
-        [[0, 0, 0], [0, 500, 0], [500, 500, 0], [500, 0, 0], [0, 0, -300], [0, 500, -300], [500, 500, -300],
-         [500, 0, -300]])
+    # Define output video object
+    video_format = cv.VideoWriter_fourcc(*'XVID')
+    video_output = cv.VideoWriter('videos/demo.avi', video_format, 10.0, (960, 540))
+    # Begin loop for iterate through each frame of the video
     while True:
         # Read the video frame by frame
         video_frame_exists, video_frame = tag.read()
@@ -39,15 +46,17 @@ if __name__ == '__main__':
                     # Draw the selected Contour matching the criteria fixed
                     cv.drawContours(video_frame, [contour], 0, (0, 0, 225), 2)
                     # Warp the video frame
-                    h_mat, _ = si.get_h_matrices(contour_poly_curve, x_ref, y_ref)
-                    warp_image, wi_coords = si.warp_image(h_mat, x_ref, y_ref)
-                    vf_superimpose = si.superimpose_image(warp_image, vf_original, vf_grayscale, wi_coords)
-                    _, vf_si_thresh = cv.threshold(vf_superimpose, 220, 255, cv.THRESH_BINARY)
+                    h_mat, _ = si.get_h_matrices(contour_poly_curve, ref_dimension, ref_dimension)
+                    # warp_image, wi_coords = si.warp_image(h_mat, ref_dimension, ref_dimension)
+                    # vf_superimpose = si.superimpose_image(warp_image, vf_original, vf_grayscale, wi_coords)
+                    # _, vf_si_thresh = cv.threshold(vf_superimpose, 220, 255, cv.THRESH_BINARY)
+                    vf_warp = si.get_warp_perspective(cv.transpose(vf_original), h_mat, (ref_dimension, ref_dimension))
+                    vf_warp_gray = cv.cvtColor(cv.transpose(vf_warp), cv.COLOR_BGR2GRAY)
                     # Get orientation and tag ID
-                    orientation = detector.get_orientation(vf_superimpose)
-                    tag_id = detector.get_tag_id(vf_superimpose, orientation)
+                    orientation, new_world_frame = detector.get_tag_orientation(vf_warp_gray, ref_dimension)
+                    tag_id = detector.get_tag_id(vf_warp_gray, orientation)
                     print(orientation, tag_id)
-                    # Warp Lena onto the video
+                    # Warp Lena onto the video frame
                     _, inv_h = si.get_h_matrices(contour_poly_curve, lena_x, lena_y, orientation)
                     # warp_image, wi_coords = si.warp_image(inv_h, rows, cols)
                     # lena_superimpose = si.superimpose_image(warp_image, vf_original, lena_gray, wi_coords)
@@ -58,7 +67,7 @@ if __name__ == '__main__':
                     # mask = cv.bitwise_not(mask)
                     # masked_image2 = cv.bitwise_and(vf_original, mask)
                     # lena_result = cv.bitwise_or(lena_si_thresh, masked_image2)
-                    # Draw cube
+                    # Get projection matrix to draw cuboid onto the video frame
                     r_mat, t, k_mat = draw_3d.get_krt_matrix(inv_h)
                     three_d_points, _ = cv.projectPoints(three_d_axis, r_mat, t, k_mat, np.zeros(4))
                     three_d_points = np.int32(three_d_points).reshape(-1, 2)
@@ -68,9 +77,9 @@ if __name__ == '__main__':
                                               (0, 0, 255), 3)
                     vf_original = cv.drawContours(vf_original, [three_d_points[4:]], -1, (255, 0, 0), 3)
 
-        cv.imshow('Original Frame', video_frame)
-        cv.imshow('Superimpose', vf_original)
-        key = cv.waitKey(1)
-        if key == 27:
-            break
+        video_output.write(vf_original)
+
+    tag.release()
+    video_output.release()
+    cv.destroyAllWindows()
 
