@@ -1,4 +1,3 @@
-import cv2 as cv
 import numpy as np
 
 
@@ -12,8 +11,8 @@ def get_h_matrices(poly_curve, x, y, orientation=0):
     :return: the homogeneous or inverse-homogeneous transform matrix
     """
     orientations = {'bottom_right': 0, 'bottom_left': 1, 'top_right': 2, 'top_left': 3}
-    x_width = np.zeros((1, 4), dtype=int)
-    y_width = np.zeros((1, 4), dtype=int)
+    x_width = np.zeros(4, dtype=int)
+    y_width = np.zeros(4, dtype=int)
     x_center = np.array([0, x, x, 0])
     y_center = np.array([0, 0, y, y])
 
@@ -56,24 +55,26 @@ def get_h_matrices(poly_curve, x, y, orientation=0):
     h_mat = np.array(v_h[8, :] / v_h[8, 8]).reshape((-1, 3))
     inv_h = np.linalg.inv(h_mat)
     # Return inverse homogeneous transform
-    return inv_h
+    return h_mat, inv_h
 
 
-def warp_image(image, ref_img, inv_h):
-    inv_h = inv_h / inv_h[2, 2]
-    # print(inv_h)
-    for i in range(rangex[0], rangex[1]):  # x
-        for j in range(rangey[0], rangey[1]):  # y
+def warp_image(h_mat, x_ref, y_ref):
+    img_coordinates = []
+    for i in range(y_ref):
+        for j in range(x_ref):
+            img_coordinates.append([i, j, 1])
 
-            p = np.array([i, j, 1]).T
-            pn = np.matmul(inv_h, p)
-            pn = ((pn / pn[2])).astype(int)
-            # print(pn)
-            if (pn[0] < img2.shape[1]) and (pn[1] < img2.shape[0]) and (pn[0] > -1) and (pn[1] > -1):
-                img1[j, i] = img2[pn[1], pn[0]]
-
-    return img1
+    return np.matmul(h_mat, np.transpose(img_coordinates)), img_coordinates
 
 
-def superimpose_image():
-    return
+def superimpose_image(warped_img, video_frame, gray_img, gray_img_coords):
+    warped_img_coords = []
+    for i in range(warped_img.shape[1]):
+        warped_img_coords.append(
+            [int(round(warped_img[0][i] / warped_img[2][i])), int(round(warped_img[1][i] / warped_img[2][i]))])
+
+    for i in range(len(warped_img_coords)):
+        if 0 <= warped_img_coords[i][0] < video_frame.shape[0] and 0 <= warped_img_coords[i][1] < video_frame.shape[1]:
+            video_frame[warped_img_coords[i][0]][warped_img_coords[i][1]] = \
+                gray_img[gray_img_coords[i][0]][gray_img_coords[i][1]]
+    return gray_img
