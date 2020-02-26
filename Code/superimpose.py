@@ -74,11 +74,11 @@ def superimpose_image(warped_img, video_frame, gray_img, gray_img_coords):
         warped_img_coords.append(
             [int(round(warped_img[0][i] / warped_img[2][i])), int(round(warped_img[1][i] / warped_img[2][i]))])
 
-    for i in range(len(warped_img_coords)):
-        if 0 <= warped_img_coords[i][0] < video_frame.shape[0] and 0 <= warped_img_coords[i][1] < video_frame.shape[1]:
+    for i in range(0, len(warped_img_coords)):
+        if 0 <= warped_img_coords[i][0] < gray_img.shape[0] and 0 <= warped_img_coords[i][1] < gray_img.shape[1]:
             video_frame[warped_img_coords[i][0]][warped_img_coords[i][1]] = \
                 gray_img[gray_img_coords[i][0]][gray_img_coords[i][1]]
-    return gray_img
+    return video_frame
 
 
 def get_warp_perspective(transpose_image, h_matrix, dimension):
