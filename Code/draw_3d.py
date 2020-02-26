@@ -1,4 +1,5 @@
 import numpy as np
+import cv2 as cv
 
 
 def get_krt_matrix(inv_h):
@@ -19,10 +20,11 @@ def get_krt_matrix(inv_h):
     return r_mat, t, k_mat
 
 
-# def draw_cuboid(video_frame, three_d_points):
-#     three_d_points = np.int32(three_d_points).reshape(-1, 2)
-#     video_frame = cv.drawContours(video_frame, [three_d_points[:4]], -1, (0, 255, 0), 3)   # Ground plane
-#     for i, j in zip(range(4), range(4, 8)):                                    # Z Axis planes
-#         video_frame = cv.line(video_frame, tuple(three_d_points[i]), tuple(three_d_points[j]), (0, 0, 255), 3)
-#     video_frame = cv.drawContours(video_frame, [three_d_points[4:]], -1, (255, 0, 0), 3)   # Top plane
-#     return video_frame
+def draw_cuboid(video_frame, three_d_points, krt_matrices):
+    three_d_points, _ = cv.projectPoints(three_d_points, krt_matrices[0], krt_matrices[1], krt_matrices[2], np.zeros(4))
+    three_d_points = np.int32(three_d_points).reshape(-1, 2)
+    video_frame = cv.drawContours(video_frame, [three_d_points[:4]], -1, (0, 255, 0), 3)   # Ground plane
+    for i, j in zip(range(4), range(4, 8)):                                    # Z Axis planes
+        video_frame = cv.line(video_frame, tuple(three_d_points[i]), tuple(three_d_points[j]), (0, 0, 255), 3)
+    video_frame = cv.drawContours(video_frame, [three_d_points[4:]], -1, (255, 0, 0), 3)   # Top plane
+    return video_frame
