@@ -10,9 +10,10 @@ Detection of AR tags without using *findHomography* and *warpPerspective* functi
 
 - [Umang Rastogi](https://www.linkedin.com/in/urastogi96/) - Robotics graduate student at UMD interested in working in
 the autonomous vehicle industry
-- [Sayani Roy](https://www.linkedin.com/in/roysayani/) - 
+- [Sayani Roy](https://www.linkedin.com/in/roysayani/) - UMD Robotics Graduate student interested in medical 
+robotics
 - [Prateek Bhargava](https://www.linkedin.com/in/prateek96/) - UMD Robotics Graduate student interested in space 
-robotics. 
+robotics
 
 
 ## Dependencies
