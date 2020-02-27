@@ -18,14 +18,14 @@ if __name__ == '__main__':
     three_d_points = np.float32([[0, 0, 0], [0, 400, 0], [400, 400, 0], [400, 0, 0], [0, 0, -400],
                                 [0, 400, -400], [400, 400, -400], [400, 0, -400]])
     # Create cv objects for video and Lena image
-    tag = cv.VideoCapture(video_location)
+    tag = cv.VideoCapture(str(video_location))
     lena = cv.imread('images/Lena.png')
     lena = cv.resize(lena, (ref_dimension - 1, ref_dimension - 1))
     lena_x, lena_y, lena_channels = lena.shape
     lena_gray = cv.cvtColor(lena, cv.COLOR_BGR2GRAY)
     # Define output video object
     video_format = cv.VideoWriter_fourcc('X', 'V', 'I', 'D')
-    video_output = cv.VideoWriter(output_destination, video_format, 20.0, (1920, 1080))
+    video_output = cv.VideoWriter(str(output_destination), video_format, 20.0, (1920, 1080))
     total_frames = 0
     # Begin loop for iterate through each frame of the video
     while True:
