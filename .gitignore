@@ -2,9 +2,6 @@
 *.py[cod]
 *$py.class
 
-# Custom files
-Code/videos/
-
 # C extensions
 *.so
 
