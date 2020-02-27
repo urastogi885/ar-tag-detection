@@ -13,8 +13,6 @@ script, video_location, output_destination = argv
 if __name__ == '__main__':
     # Define constants for entire project
     ref_dimension = 400
-    ref_world_frame = np.array([[0, 0], [ref_dimension - 1, 0], [ref_dimension - 1, ref_dimension - 1],
-                                [0, ref_dimension - 1]], dtype="float32")
     three_d_points = np.float32([[0, 0, 0], [0, 400, 0], [400, 400, 0], [400, 0, 0], [0, 0, -400],
                                 [0, 400, -400], [400, 400, -400], [400, 0, -400]])
     # Create cv objects for video and Lena image
@@ -49,7 +47,7 @@ if __name__ == '__main__':
             contour_poly_curve = cv.approxPolyDP(contour, 0.01 * cv.arcLength(contour, closed=True), closed=True)
             if 2000 < contour_area <= 22000 and len(contour_poly_curve) == 4:
                 # Draw the selected Contour matching the criteria fixed
-                cv.drawContours(vf_original, [contour], 0, (0, 0, 225), 1)
+                # cv.drawContours(vf_original, [contour], 0, (0, 0, 225), 1)
                 # Warp the video frame
                 h_mat, _ = si.get_h_matrices(contour_poly_curve, ref_dimension, ref_dimension)
                 vf_warp = si.get_warp_perspective(cv.transpose(video_frame), h_mat, (ref_dimension,
@@ -71,7 +69,8 @@ if __name__ == '__main__':
                 lw_grayscale = cv.cvtColor(lena_warped, cv.COLOR_BGR2GRAY)
                 _, lw_thresh = cv.threshold(lw_grayscale, 0, 250, cv.THRESH_BINARY_INV)
                 vf_slotted = cv.bitwise_and(vf_original, vf_original, mask=lw_thresh)
-                lena_superimpose = cv.add(vf_slotted, lena_warped)
+                # Superimpose lena onto the tag detected in the video frame
+                vf_original = cv.add(vf_slotted, lena_warped)
                 # Get projection matrix to draw cuboid onto the video frame
                 vf_original = draw_3d.draw_cube(vf_original, three_d_points, draw_3d.get_krt_matrix(inv_h))
                 # Write output into a video frame by frame
