@@ -20,10 +20,9 @@ if __name__ == '__main__':
     lena = cv.resize(lena, (ref_dimension - 1, ref_dimension - 1))
     lena_x, lena_y, lena_channels = lena.shape
     lena_gray = cv.cvtColor(lena, cv.COLOR_BGR2GRAY)
-    # lena_superimpose = np.zeros((lena_x, lena_y, lena_channels))
     # Define output video object
-    video_format = cv.VideoWriter_fourcc('M', 'J', 'P', 'G')
-    video_output = cv.VideoWriter('videos/cube_tag2.avi', video_format, 10, (640, 480))
+    video_format = cv.VideoWriter_fourcc('X', 'V', 'I', 'D')
+    video_output = cv.VideoWriter('videos/contours_tag0.avi', video_format, 20.0, (1920, 1080))
     total_frames = 0
     # Begin loop for iterate through each frame of the video
     while True:
@@ -48,7 +47,7 @@ if __name__ == '__main__':
             contour_poly_curve = cv.approxPolyDP(contour, 0.01 * cv.arcLength(contour, closed=True), closed=True)
             if 2000 < contour_area <= 22000 and len(contour_poly_curve) == 4:
                 # Draw the selected Contour matching the criteria fixed
-                # cv.drawContours(video_frame, [contour], 0, (0, 0, 225), 2)
+                cv.drawContours(vf_original, [contour], 0, (0, 0, 225), 2)
                 # Warp the video frame
                 h_mat, _ = si.get_h_matrices(contour_poly_curve, ref_dimension, ref_dimension)
                 vf_warp = si.get_warp_perspective(cv.transpose(video_frame), h_mat, (ref_dimension,
@@ -58,6 +57,9 @@ if __name__ == '__main__':
                 orientation, new_world_frame = detector.get_tag_orientation(vf_warp_gray, ref_dimension)
                 tag_id = detector.get_tag_id(vf_warp_gray, orientation)
                 print(total_frames, orientation, tag_id)
+                cv.putText(vf_original, "Tag ID: " + tag_id, (contour_poly_curve[0][0][0] - 50,
+                                                              contour_poly_curve[0][0][1] - 50),
+                           cv.FONT_HERSHEY_COMPLEX, 1, (0, 0, 225), 2, cv.LINE_AA)
                 # Warp Lena onto the video frame
                 h_mat, inv_h = si.get_h_matrices(contour_poly_curve, lena_x, lena_y, orientation)
                 lena_warped = si.get_warp_perspective(lena, inv_h, (cols, rows))
@@ -76,7 +78,7 @@ if __name__ == '__main__':
                 # if key == 27:
                 #     break
                 # if total_frames > 1:
-                # video_output.write(vf_original)
+                video_output.write(vf_original)
 
     tag.release()
     video_output.release()
