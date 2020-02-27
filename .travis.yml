@@ -13,7 +13,7 @@ before_install:
 # Install the library dependcies
 install:
   - sudo apt-get install python3
-  - pip3 install pandas numpy opencv-python
+  - pip3 install numpy opencv-python
 
 # Run python scripts
 script:
