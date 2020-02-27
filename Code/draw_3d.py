@@ -1,8 +1,15 @@
 import numpy as np
-import cv2 as cv
+from cv2 import line
+from cv2 import projectPoints
+from cv2 import drawContours
 
 
 def get_krt_matrix(inv_h):
+    """
+    get matrices to transform 3-D points
+    :param inv_h: inverse homography matrix
+    :return: a tuple of 3 transformation matrices
+    """
     k_mat = np.array(
         [[1406.08415449821, 0, 0], [2.20679787308599, 1417.99930662800, 0], [1014.13643417416, 566.347754321696, 1]]).T
     inv_k_mat = np.linalg.inv(k_mat)
@@ -20,11 +27,19 @@ def get_krt_matrix(inv_h):
     return r_mat, t, k_mat
 
 
-def draw_cuboid(video_frame, three_d_points, krt_matrices):
-    three_d_points, _ = cv.projectPoints(three_d_points, krt_matrices[0], krt_matrices[1], krt_matrices[2], np.zeros(4))
+def draw_cube(video_frame, three_d_points, krt_matrices):
+    """
+    draw cube on the current video frame
+    :param video_frame: current video frame
+    :param three_d_points: pre-defined 3-D points
+    :param krt_matrices: a tuple of 3 transformation matrices
+    :return: frame with cube drawn on it
+    """
+    # Get new 3-D points using pre-defined 3-D points and transformation matrices
+    three_d_points, _ = projectPoints(three_d_points, krt_matrices[0], krt_matrices[1], krt_matrices[2], np.zeros(4))
     three_d_points = np.int32(three_d_points).reshape(-1, 2)
-    video_frame = cv.drawContours(video_frame, [three_d_points[:4]], -1, (0, 255, 0), 3)   # Ground plane
-    for i, j in zip(range(4), range(4, 8)):                                    # Z Axis planes
-        video_frame = cv.line(video_frame, tuple(three_d_points[i]), tuple(three_d_points[j]), (0, 0, 255), 3)
-    video_frame = cv.drawContours(video_frame, [three_d_points[4:]], -1, (255, 0, 0), 3)   # Top plane
+    video_frame = drawContours(video_frame, [three_d_points[:4]], -1, (0, 255, 0), 2)
+    for i, j in zip(range(4), range(4, 8)):
+        video_frame = line(video_frame, tuple(three_d_points[i]), tuple(three_d_points[j]), (0, 0, 255), 2)
+    video_frame = drawContours(video_frame, [three_d_points[4:]], -1, (255, 0, 0), 2)
     return video_frame

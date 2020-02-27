@@ -1,5 +1,4 @@
 import cv2 as cv
-import numpy as np
 
 
 def find_contours(img_frame):
@@ -17,7 +16,7 @@ def get_tag_orientation(img_frame, dimension):
     """ get orientation from the image frame
     :param img_frame: image frame from the video
     :param dimension: dimension to modify the new world frame
-    :return: orientation of the tag along with new world points based on the orientation
+    :return: orientation of the tag
     """
     # Check get_H_matrix function in superimpose for orientation notation
     orientations = {0: 0, 1: 0, 2: 0, 3: 0}
@@ -38,35 +37,14 @@ def get_tag_orientation(img_frame, dimension):
         for j in range(100, 151):
             orientations[3] += img_frame[i, j]
 
-    orientation = max(orientations, key=orientations.get)
-    # World frame for top-left orientation
-    new__world_frame = np.array([[dimension - 1, dimension - 1], [0, dimension - 1], [0, 0], [dimension - 1, 0]],
-                                dtype="float32")
-    # Modify the world frame w.r.t the orientation of the tag
-    # Orientation: Bottom Right
-    if orientation == 0:
-        new__world_frame = np.array([[0, 0], [dimension - 1, 0], [dimension - 1, dimension - 1], [0, dimension - 1]],
-                                    dtype="float32")
-        return orientation, new__world_frame
-    # Orientation: Bottom Left
-    elif orientation == 1:
-        new__world_frame = np.array([[0, dimension - 1], [0, 0], [dimension - 1, 0], [dimension - 1, dimension - 1]],
-                                    dtype="float32")
-        return orientation, new__world_frame
-    # Orientation: Top Right
-    elif orientation == 2:
-        new__world_frame = np.array([[dimension - 1, 0], [dimension - 1, dimension - 1], [0, dimension - 1], [0, 0]],
-                                    dtype="float32")
-        return orientation, new__world_frame
-
-    return orientation, new__world_frame
+    return max(orientations, key=orientations.get)
 
 
 def get_tag_id(img_frame, orientation):
     """
-    :param img_frame:
-    :param orientation:
-    :return:
+    :param img_frame: current frame of the video
+    :param orientation: orientation of the tag
+    :return: tag ID
     """
     tag_id = ''
     keys = []
