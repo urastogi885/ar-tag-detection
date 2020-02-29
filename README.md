@@ -48,7 +48,7 @@ regions of 4 points.
 
 <p align="center">
   <img src="https://github.com/urastogi885/ar-tag-detection/blob/master/Code/images/Lena.png">
-  <b>Figure 2 - Image for superimposition</b>
+  <br><b>Figure 2 - Image for superimposition</b><br>
 </p>
 <p align="center">
   <img src="https://github.com/urastogi885/ar-tag-detection/blob/master/Code/images/image_superimposition.png">
