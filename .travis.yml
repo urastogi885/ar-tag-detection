@@ -17,5 +17,5 @@ install:
 
 # Run python scripts
 script:
-  cd Code/
-  python3 main.py videos/Tag1.mp4 videos/output_tag1.avi
+  - cd Code/
+  - python3 main.py videos/Tag0.mp4 videos/output_tag0.avi
