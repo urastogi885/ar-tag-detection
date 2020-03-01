@@ -18,4 +18,7 @@ install:
 # Run python scripts
 script:
   - cd Code/
-  - python3 main.py videos/Tag0.mp4 videos/output_tag0.avi
+  - python3 detector.py
+  - python3 superimpose.py
+  - python3 draw_3d.py
+  - python3 main.py videos/multipleTag.mp4 videos/demo.avi
