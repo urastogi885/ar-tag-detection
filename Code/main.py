@@ -4,9 +4,7 @@ import numpy as np
 from sys import argv
 from copy import deepcopy
 # Import custom function scripts
-import detector
-import draw_3d
-import superimpose as si
+from utils import draw_3d, detector, superimpose as si
 
 script, video_location, output_destination = argv
 
