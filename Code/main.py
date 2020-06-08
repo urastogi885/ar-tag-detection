@@ -43,26 +43,25 @@ if __name__ == '__main__':
         for contour in contours:
             contour_area = cv2.contourArea(contour)
             contour_poly_curve = cv2.approxPolyDP(contour, 0.01 * cv2.arcLength(contour, closed=True), closed=True)
-            if 2000 < contour_area <= 22000 and len(contour_poly_curve) == 4:
+            if 2000 < contour_area < 22600 and len(contour_poly_curve) == 4:
                 # Draw the selected Contour matching the criteria fixed
-                # cv2.drawContours(vf_original, [contour], 0, (0, 0, 225), 1)
+                cv2.drawContours(vf_original, [contour], 0, (0, 0, 225), 1)
                 # Warp the video frame
                 h_mat, _ = si.get_h_matrices(contour_poly_curve, ref_dimension, ref_dimension)
-                vf_warp = si.get_warp_perspective(cv2.transpose(video_frame), h_mat, (ref_dimension,
-                                                                                     ref_dimension))
-                vf_warp_gray = cv2.cvtColor(cv2.transpose(vf_warp), cv2.COLOR_BGR2GRAY)
+                vf_warp = cv2.warpPerspective(video_frame, h_mat, (ref_dimension, ref_dimension))
+                vf_warp_gray = cv2.cvtColor(vf_warp, cv2.COLOR_BGR2GRAY)
                 # Get orientation and tag ID
                 orientation = detector.get_tag_orientation(vf_warp_gray, ref_dimension)
                 tag_id = detector.get_tag_id(vf_warp_gray, orientation)
                 # Display tag ID on each frame
                 print(total_frames, orientation, tag_id)
                 cv2.putText(vf_original, "Tag ID: " + tag_id, (contour_poly_curve[0][0][0] - 50,
-                                                              contour_poly_curve[0][0][1] - 50),
-                           cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 225), 2, cv2.LINE_AA)
+                                                               contour_poly_curve[0][0][1] - 50),
+                            cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 225), 2, cv2.LINE_AA)
                 # Warp Lena onto the video frame
                 h_mat, inv_h = si.get_h_matrices(contour_poly_curve, lena_x, lena_y, orientation)
-                lena_warped = si.get_warp_perspective(lena, inv_h, (cols, rows))
-                lena_warped = cv2.transpose(lena_warped)
+                lena_warped = cv2.warpPerspective(lena, inv_h, (cols, rows))
+                # lena_warped = cv2.transpose(lena_warped)
                 # Invert the video frame within the region of the tag to superimpose Lena on the video frame
                 lw_grayscale = cv2.cvtColor(lena_warped, cv2.COLOR_BGR2GRAY)
                 _, lw_thresh = cv2.threshold(lw_grayscale, 0, 250, cv2.THRESH_BINARY_INV)
