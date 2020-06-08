@@ -5,7 +5,7 @@ os: linux
 language: python
 
 # Set the python version to 3.5
-python: 3.5
+python: 3.6
 
 before_install:
   - sudo apt-get update
@@ -18,7 +18,7 @@ install:
 # Run python scripts
 script:
   - cd Code/
-  - python3 detector.py
-  - python3 superimpose.py
-  - python3 draw_3d.py
-  - python3 main.py videos/multipleTag.mp4 videos/demo.avi
+  - python3 utils/detector.py
+  - python3 utils/superimpose.py
+  - python3 utils/draw_3d.py
+  - python3 main.py videos/Tag0.mp4 videos/demo.avi
