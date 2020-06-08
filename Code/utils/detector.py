@@ -12,10 +12,9 @@ def find_contours(img_frame):
     return contours
 
 
-def get_tag_orientation(img_frame, dimension):
+def get_tag_orientation(img_frame):
     """ get orientation from the image frame
     :param img_frame: image frame from the video
-    :param dimension: dimension to modify the new world frame
     :return: orientation of the tag
     """
     # Check get_H_matrix function in superimpose for orientation notation
