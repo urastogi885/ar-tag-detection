@@ -51,7 +51,7 @@ if __name__ == '__main__':
                 vf_warp = cv2.warpPerspective(video_frame, h_mat, (ref_dimension, ref_dimension))
                 vf_warp_gray = cv2.cvtColor(vf_warp, cv2.COLOR_BGR2GRAY)
                 # Get orientation and tag ID
-                orientation = detector.get_tag_orientation(vf_warp_gray, ref_dimension)
+                orientation = detector.get_tag_orientation(vf_warp_gray)
                 tag_id = detector.get_tag_id(vf_warp_gray, orientation)
                 # Display tag ID on each frame
                 print(total_frames, orientation, tag_id)
